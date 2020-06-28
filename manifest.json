@@ -1,0 +1,13 @@
+{
+  "name": "Chartidy",
+  "version": "1.0",
+  "description": "Display the chart of table on user choice.",
+  "manifest_version": 2,
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["src/style.css"],
+      "js": ["src/scripts/jquery.js", "src/scripts/canvas.js", "src/contentScript.js"]
+    }
+  ]
+}
