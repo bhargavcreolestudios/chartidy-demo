@@ -5,9 +5,14 @@
   "manifest_version": 2,
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://www1.nseindia.com/*"],
       "css": ["src/style.css"],
       "js": ["src/scripts/jquery.js", "src/scripts/canvas.js", "src/contentScript.js"]
+    },
+    {
+      "matches": ["https://in.finance.yahoo.com/*"],
+      "css": ["src/style.css"],
+      "js": ["src/scripts/jquery.js", "src/scripts/canvas.js", "src/contentYahooScript.js"]
     }
   ]
 }

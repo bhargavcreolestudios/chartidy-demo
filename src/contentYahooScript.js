@@ -1,8 +1,8 @@
 var buttonVisibleWrapper = $("<button>", {
-  class: "btn-visible",
+  class: "btn-visible yahoo-btn",
 }).text("VISUALIZE");
-var highLowIndicator = $(".high-low-indicator");
-var tabluarData = $(".tabular-data-historic");
+var mainContainer = $("#YDC-Col1");
+var tabluarData = $("#mrt-node-Col1-1-HistoricalDataTable");
 var chartContainer = $("<div>", {
   id: "chartcontainer",
   class: "charts-wrapper d-none",
@@ -34,11 +34,9 @@ var modal = $("<div>", { id: "open-modal", class: "modal-window" }).append(`
 `);
 
 $("body").append(modal);
+mainContainer.append(buttonVisibleWrapper);
+tabluarData.addClass("tabular-formart");
 tabluarData.after(chartContainer);
-
-tabluarData.bind("DOMSubtreeModified", function (e) {
-  highLowIndicator.after(buttonVisibleWrapper);
-});
 
 buttonVisibleWrapper.on("click", function (e) {
   $(modal).addClass("modal-show");
@@ -61,41 +59,41 @@ function handleTableData() {
   var xAxis = [];
   var yAxis = [];
 
-  $(".tabular-data-historic table tr").each(function (row, tr) {
-    if (row === 0) {
-      var colData = $(tr).text().trim().split("\n");
-      colData.forEach(function (element, index) {
-        colname.push(element.trim());
-      });
-    }
+  $("#Col1-1-HistoricalDataTable-Proxy table tr th").each(function (row, tr) {
+    colname.push($(tr).children().text());
   });
 
-  if (!xInput || !yInput) return;
+  if (xInput === '' || yInput === '') return;
   if (xInput >= colname.length || yInput >= colname.length) return;
 
   // X Axis mapping
-  $(".tabular-data-historic table tr").each(function (row, tr) {
-    if (row !== 0) {
-      var data = $(tr).find(`td:eq(${xInput})`).text().trim();
-      if (xInput === 2) {
-        xAxis.push(data);
-      } else {
-        var xString = data.replace(/\,/g, "");
-        var filteredDate = parseFloat(xString);
-        xAxis.push(filteredDate);
-      }
+  $("#Col1-1-HistoricalDataTable-Proxy table tr").each(function (row, tr) {
+
+    var data = $(tr).find(`td:eq(${xInput})`);
+    var formatedData = data.children().text();
+    if (xInput === 0) {
+      xAxis.push(formatedData);
+    } else {
+      var xString = formatedData.replace(/\,/g, "");
+      var filteredDate = parseFloat(xString);
+      xAxis.push(filteredDate);
     }
   });
-
-  // Y Axis mapping
-  $(".tabular-data-historic table tr").each(function (row, tr) {
-    if (row !== 0) {
-      var data = $(tr).find(`td:eq(${yInput})`).text().trim();
-      var yString = data.replace(/\,/g, "");
-      var filteredDate = parseFloat(yString);
+  xAxis.shift();
+  xAxis.pop();
+  $("#Col1-1-HistoricalDataTable-Proxy table tr").each(function (row, tr) {
+    var data = $(tr).find(`td:eq(${yInput})`);
+    var formatedData = data.children().text();
+    if (yInput === 0) {
+      yAxis.push(formatedData);
+    } else {
+      var xString = formatedData.replace(/\,/g, "");
+      var filteredDate = parseFloat(xString);
       yAxis.push(filteredDate);
     }
   });
+  yAxis.shift();
+  yAxis.pop();
 
   chartContainer.removeClass("d-none");
   var chart = new CanvasJS.Chart("chartcontainer", {
@@ -108,7 +106,7 @@ function handleTableData() {
 
         dataPoints: xAxis.map(function (element, index) {
           return {
-            x: xInput === 2 ? new Date(element) : element,
+            x: xInput === 0 ? new Date(element) : element,
             y: yAxis[index],
           };
         }),
@@ -119,7 +117,6 @@ function handleTableData() {
   chart.render();
 
   chartContainer.append(closeChart);
-
   $(modal).removeClass("modal-show");
 }
 
